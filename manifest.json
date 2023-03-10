@@ -1,0 +1,20 @@
+{
+    "background_color": "#FFFFFF",
+    "description": "Gere QrCodes de textos ou links instantaneamente usando apenas JavaScript.",
+    "display": "standalone",
+    "icons": [
+        {
+            "src": "icon.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        }
+    ],
+    "lang": "pt-BR",
+    "name": "JS Gerador de QrCode",
+    "orientation": "portrait",
+    "short_name": "JS Gerador de QrCode",
+    "scope": "/",
+    "start_url": "/",
+    "theme_color": "#FFFFFF",
+    "prefer_related_applications": false
+}
