@@ -202,7 +202,6 @@
     if (navigator.share) {
         if (navigator.canShare) {
             var testShareData = {
-                title: "Compartilhamento QrCode",
                 files: [makeQrCodeFile()]
             };
             if (navigator.canShare(testShareData)) {
@@ -217,7 +216,6 @@
         document.getElementById("btn-compartilhar").removeAttribute("style");
         document.getElementById("btn-compartilhar").onclick = function () {
             var shareData = {
-                title: "Compartilhamento QrCode",
                 files: [makeQrCodeFile()]
             };
             navigator.share(shareData)
