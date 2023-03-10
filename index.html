@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <!-- General -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Gere QrCodes de textos ou links instantaneamente usando apenas JavaScript.">
+    <meta name="author" content="Eduardo Mior">
+    <meta name="robots" content="index">
+    <title>JS Gerador de QrCode</title>
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" href="icon.png" sizes="192x192">
+    <!-- Android -->
+    <meta name="theme-color" content="#FFFFFF">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="JS Gerador de QrCode">
+
+    <!-- iOS -->
+    <meta name="apple-mobile-web-app-title" content="JS Gerador de QrCode">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <!-- OG -->
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="JS Gerador de QrCode">
+    <meta property="og:site_name" content="JS Gerador de QrCode">
+    <meta property="og:description" content="Gere QrCodes de textos ou links instantaneamente usando apenas JavaScript.">
+    <meta property="og:url" content="https://hora-atual.vercel.app/">
+    <meta property="og:image" content="og-icon.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="JS Gerador de QrCode">
+
+    <!-- JS -->
+    <script src="qrcode.min.js"></script>
+
+    <!-- CSS -->
+    <style>
+        * {
+            font-family: system-ui !important;
+            box-sizing: border-box !important;
+            color: #222222;
+        }
+
+        body {
+            margin: 0px !important;
+        }
+
+        div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        label {
+            margin-top: 20px;
+            font-size: 28px;
+        }
+
+        textarea {
+            width: 400px;
+            max-width: 94%;
+            height: 50px;
+            font-size: 28px;
+        }
+
+        h1 {
+            margin-bottom: 12px;
+            font-size: 40px;
+        }
+
+        button {
+            border: 0;
+            border-radius: 50px;
+            font-size: 22px;
+            padding: 12px 24px;
+            color: #FFFFFF;
+            background-color: #00B69E;
+            cursor: pointer;
+            margin-top: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 290px;
+        }
+
+        #btn-compartilhar {
+            margin-top: 16px;
+            background-color: #1A8AF8;
+        }
+
+        button svg {
+            margin-right: 8px;
+            width: 20px;
+            fill: #FFFFFF;
+        }
+    </style>
+
+
+</head>
+
+<body>
+    <div>
+        <label for="conteudo-qrcode">Conteúdo do QrCode</label>
+        <textarea id="conteudo-qrcode" type="text" placeholder="Insira o conteúdo do QrCode...">https://exemplo.com.br</textarea>
+        <h1>Resultado</h1>
+        <div id="qrcode"></div>
+        <button id="btn-salvar" title="Clique para salvar do QrCode no seu computador">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z" /></svg>
+            Salvar imagem
+        </button>
+        <button id="btn-compartilhar" title="Clique para salvar do QrCode no seu computador" style="display: none !important">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z" /></svg>
+            Compartilhar imagem
+        </button>
+    </div>
+</body>
+
+<!-- Utils JS -->
+<script>
+
+    function sanitizeBase64(base64) {
+        return base64.substring(base64.indexOf(",") + 1);
+    }
+
+    function base64ToBlob(base64) {
+        base64 = sanitizeBase64(base64);
+
+        var content = atob(base64);
+
+        var buffer = new ArrayBuffer(content.length);
+        var view = new Uint8Array(buffer);
+        for (var n = 0; n < content.length; n++) {
+            view[n] = content.charCodeAt(n);
+        }
+
+        return new Blob([buffer], { "type": "imagen/png" });
+    }
+
+    function makeQrCodeFile() {
+        var qrCodeBase64 = document.querySelector("#qrcode img").src;
+        var qrCodeBlob = base64ToBlob(qrCodeBase64);
+        return new File([qrCodeBlob], "qr-code.png", { type: "image/png" });
+    }
+
+</script>
+
+<!-- Core JS -->
+<script>
+
+    var input = document.getElementById("conteudo-qrcode");
+    var qrCode = new QRCode(document.getElementById("qrcode"), input.value);
+    input.oninput = function () {
+        qrCode.clear();
+        qrCode.makeCode(this.value);
+    }
+
+    var button = document.getElementById("btn-salvar");
+    button.onclick = function () {
+
+        var qrCodeBase64 = document.querySelector("#qrcode img").src;
+        var link = document.createElement("a");
+
+        document.body.appendChild(link);
+        link.setAttribute("type", "hidden");
+        link.setAttribute("href", qrCodeBase64);
+        link.setAttribute("download", "qr-code.png");
+        link.click();
+        document.body.removeChild(link);
+
+    }
+
+    var supportShare = false;
+    if (navigator.share) {
+        if (navigator.canShare) {
+            var testShareData = {
+                title: "Compartilhamento QrCode",
+                files: [makeQrCodeFile()]
+            };
+            if (navigator.canShare(testShareData)) {
+                supportShare = true;
+            }
+        } else {
+            supportShare = true;
+        }
+    }
+
+    if (supportShare) {
+        document.getElementById("btn-compartilhar").removeAttribute("style");
+        document.getElementById("btn-compartilhar").onclick = function () {
+            var shareData = {
+                title: "Compartilhamento QrCode",
+                files: [makeQrCodeFile()]
+            };
+            navigator.share(shareData)
+        }
+    }
+
+</script>
+
+</html>
